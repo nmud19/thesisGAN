@@ -1,14 +1,11 @@
 import os
-from collections import OrderedDict
-import torch
-from pytorch_lightning import LightningDataModule, LightningModule, Trainer
-from torch.utils.data import DataLoader, random_split
-from torchvision.datasets import MNIST
-from helpers.data_creation import MNISTDataModule
-from helpers.simpleGAN.discriminator import Discriminator
-from helpers.simpleGAN.GAN import GAN
-import pytest 
 
+import pytest
+import torch
+from pytorch_lightning import Trainer
+
+from helpers.data_creation import MNISTDataModule
+from helpers.simpleGAN.GAN import GAN
 
 PATH_DATASETS = os.environ.get("PATH_DATASETS", ".")
 AVAIL_GPUS = min(1, torch.cuda.device_count())
