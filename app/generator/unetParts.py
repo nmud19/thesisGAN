@@ -1,4 +1,5 @@
 import torch
+from typing import Tuple
 
 
 class DecoderLayer(torch.nn.Module):
@@ -15,28 +16,10 @@ class DecoderLayer(torch.nn.Module):
                 bias=False,
             )
         )
-
         self.conv_layer = EncoderLayer(
             in_channels=in_channels,
             out_channels=out_channels,
         ).conv_layer
-        """
-        torch.nn.Sequential(
-
-            torch.nn.Conv2d(
-                in_channels=1024,
-                out_channels=1024,
-                kernel_size=3,
-            ),
-            torch.nn.ReLU(),
-            torch.nn.Conv2d(
-                in_channels=1024,
-                out_channels=1024,
-                kernel_size=3,
-            ),
-            torch.nn.ReLU(),
-        )
-        """
 
     @staticmethod
     def _get_cropping_shape(previous_layer_shape: torch.Size, current_layer_shape: torch.Size) -> int:
@@ -74,7 +57,7 @@ class DecoderLayer(torch.nn.Module):
 
 
 class EncoderLayer(torch.nn.Module):
-    """Layer 1 of encoder"""
+    """Encoder Layer"""
 
     def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
@@ -100,13 +83,15 @@ class EncoderLayer(torch.nn.Module):
             self.max_pool,
         )
 
-    def get_conv_layers(self, x: torch.tensor) -> torch.tensor:
+    def get_conv_layers(self, x: torch.Tensor) -> torch.Tensor:
         """Need to concatenate the layer"""
         return self.conv_layer(x)
 
-    def forward(self, x: torch.tensor) -> torch.tensor:
-        """Forward pass"""
-        return self.layer(x)
+    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Forward pass to return conv layer and the max pool layer"""
+        conv_output: torch.tensor = self.conv_layer(x)
+        fin_out: torch.Tensor = self.max_pool(conv_output)
+        return fin_out, conv_output
 
 
 class MiddleLayer(EncoderLayer):

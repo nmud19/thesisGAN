@@ -6,7 +6,12 @@ import pytest
 @pytest.mark.parametrize(
     "in_channels, out_channels, input_size, expected_output_size",
     [
-        (1, 64, torch.randn(1, 1, 572, 572), torch.Size([1, 64, 284, 284])),  # Layer 1
+        (
+                1,
+                64,
+                torch.randn(1, 1, 572, 572),
+                torch.Size([1, 64, 284, 284])
+        ),  # Layer 1
         (
             64,
             128,
@@ -35,7 +40,8 @@ def test_layer_encoder_should_return_shape(
 ) -> None:
     """Checkout layer 1"""
     layer = unetParts.EncoderLayer(in_channels=in_channels, out_channels=out_channels)
-    assert layer(input_size).shape == expected_output_size
+    actual_final_layer, _ = layer(input_size)
+    assert actual_final_layer.size() == expected_output_size
 
 
 @pytest.mark.parametrize(
