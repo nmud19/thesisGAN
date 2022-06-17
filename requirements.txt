@@ -3,3 +3,7 @@ torchmetrics>=0.3
 torchvision
 torch
 pytest
+albumentations
+matplotlib
+pandas
+numpy

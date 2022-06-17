@@ -13,6 +13,13 @@ import pytest
                 torch.randn(1, 5, 256, 256),
                 torch.randn(1, 5, 256, 256),
                 torch.Size([1, 1, 16, 16]),
+        ),
+        (
+                6,
+                1,
+                torch.randn(1, 3, 572, 572),
+                torch.randn(1, 3, 572, 572),
+                torch.Size([1, 1, 35, 35]),
         )
     ]
 )
