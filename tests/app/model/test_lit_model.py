@@ -5,10 +5,9 @@ from app.generator import unetGen
 from app.consume_data import consume_data
 import os
 
-
-def test_lightning_model():
+#TODO fix this unit test to work in pipeline
+def test_lightning_model(train_dir_path:str):
     """ Test model e2e """
-    trainer = pl.Trainer(fast_dev_run=True)
     generator = unetGen.UNET()
     discriminator = patch_gan.PatchGan(
         input_channels=6,
@@ -22,16 +21,26 @@ def test_lightning_model():
     train_images = [
         f"{train_dir_path}/{x}" for x in os.listdir(train_dir_path)
     ]
-    train_dataset, _ = consume_data.get_dataset(
+    train_dataset, valid_dataset = consume_data.get_dataset(
         train_images=train_images,
         test_images=train_images,
     )
-    train_dataloader, _ = consume_data.get_dataloaders(
+    train_dataloader, valid_dataloader = consume_data.get_dataloaders(
         train_dataset=train_dataset,
         test_dataset=train_dataset,
     )
 
+    # Trainer
+    logger = pl.loggers.TensorBoardLogger("tb_logs", name="pix2pix_lightning_model")
+    trainer = pl.Trainer(
+        # fast_dev_run=2,
+        max_epochs=5,
+        logger=logger,
+        callbacks=[pl.callbacks.TQDMProgressBar(refresh_rate=10)],
+        default_root_dir="/Users/nimud/PycharmProject/thesisGAN/checkpoints/"
+    )
     trainer.fit(
         model,
-        train_dataloaders=train_dataloader,
+        train_dataloader,
+        valid_dataloader
     )
