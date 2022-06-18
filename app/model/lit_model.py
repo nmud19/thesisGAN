@@ -109,15 +109,14 @@ class EpochInference(pl.callbacks.base.Callback):
         with torch.no_grad():
             # Take average of multiple inference as there is a random noise
             # Single
-            reconstruction_init = pl_module.forward(image)
+            reconstruction_init = pl_module(image)
             reconstruction_init = torch.clip(reconstruction_init, 0, 1)
-            # Mean
-            reconstruction_mean = torch.stack([pl_module.forward(image) for _ in range(100)])
-            reconstruction_mean = torch.clip(reconstruction_mean, 0, 1)
-            reconstruction_mean = torch.mean(reconstruction_mean, dim=0)
+            # # Mean
+            # reconstruction_mean = torch.stack([pl_module(image) for _ in range(10)])
+            # reconstruction_mean = torch.clip(reconstruction_mean, 0, 1)
+            # reconstruction_mean = torch.mean(reconstruction_mean, dim=0)
         # Grayscale 1-D to 3-D
-        image = torch.stack([image for _ in range(3)], dim=1)
-        image = torch.squeeze(image)
-        grid_image = torchvision.utils.make_grid(
-            torch.cat([image, target, reconstruction_init, reconstruction_mean], dim=0), nrow=20)
-        torchvision.utils.save_image(grid_image, fp=f'{trainer.log_dir}/epoch-{trainer.current_epoch:04}.png')
+        # image = torch.stack([image for _ in range(3)], dim=1)
+        # image = torch.squeeze(image)
+        grid_image = torchvision.utils.make_grid([image[0],target[0],reconstruction_init[0]])
+        torchvision.utils.save_image(grid_image, fp=f'{trainer.default_root_dir}/epoch-{trainer.current_epoch:04}.png')

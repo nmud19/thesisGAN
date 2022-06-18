@@ -44,7 +44,7 @@ def test_lightning_model():
             checkpoint_callback,
             # pl.callbacks.TQDMProgressBar(refresh_rate=10)
         ],
-        default_root_dir="/Users/nimud/PycharmProject/thesisGAN/checkpoints/"
+        default_root_dir="/Users/nimud/PycharmProject/thesisGAN/checkpoints/",
     )
     trainer.fit(
         model,
