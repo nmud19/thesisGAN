@@ -84,7 +84,7 @@ class Pix2PixLitModule(pl.LightningModule):
         return disc_opt, gen_opt
 
 
-class EpochInference(pl.callbacks.base.Callback):
+class EpochInference(pl.Callback):
     """
     Callback on each end of training epoch
     The callback will do inference on test dataloader based on corresponding checkpoints

@@ -36,8 +36,8 @@ def test_lightning_model():
     checkpoint_callback = pl.callbacks.model_checkpoint.ModelCheckpoint()
     logger = pl.loggers.TensorBoardLogger("tb_logs", name="pix2pix_lightning_model")
     trainer = pl.Trainer(
-        fast_dev_run=True,
-        # max_epochs=5,
+        # fast_dev_run=True,
+        max_epochs=5,
         logger=logger,
         callbacks=[
             epoch_inference_callback,
