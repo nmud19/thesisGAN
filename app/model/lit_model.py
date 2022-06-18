@@ -60,11 +60,9 @@ class Pix2PixLitModule(pl.LightningModule):
         loss = None
         if optimizer_idx == 0:
             loss = self._disc_step(real, condition)
-            print("disc done", loss)
             self.log("PatchGAN Loss", loss)
         elif optimizer_idx == 1:
             loss = self._gen_step(real, condition)
-            print("gen done", loss)
             self.log("Generator Loss", loss)
         return loss
 

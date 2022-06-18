@@ -5,3 +5,4 @@ notebooks/MNIST
 __pycache__
 .DS_Store
 launch.json
+/checkpoints/*
