@@ -15,9 +15,16 @@ class Pix2PixLitModule(pl.LightningModule):
             torch.nn.init.normal_(m.weight, 0.0, 0.02)
             torch.nn.init.constant_(m.bias, 0)
 
-    def __init__(self, generator, discriminator,lambda_recon=200):
+    def __init__(
+            self,
+            generator,
+            discriminator,
+            use_gpu:bool,
+            lambda_recon=200
+    ):
         super().__init__()
         self.save_hyperparameters()
+        self.use_gpu = use_gpu
 
         self.gen = generator
         self.disc = discriminator
@@ -53,10 +60,15 @@ class Pix2PixLitModule(pl.LightningModule):
         return (real_loss + fake_loss) / 2
 
     def forward(self, x):
+        if self.use_gpu :
+            x = x.cuda()
         return self.gen(x)
 
     def training_step(self, batch, batch_idx, optimizer_idx):
         real, condition = batch
+        if self.use_gpu :
+            real = real.cuda()
+            condition = condition.cuda()
 
         loss = None
         if optimizer_idx == 0:
@@ -96,16 +108,18 @@ class EpochInference(pl.Callback):
     Note that the inference have a noise factor that will generate different output on each execution
     """
 
-    def __init__(self, dataloader, *args, **kwargs):
+    def __init__(self, dataloader, use_gpu:bool, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dataloader = dataloader
+        self.use_gpu = use_gpu
 
     def on_train_epoch_end(self, trainer, pl_module):
         super().on_train_epoch_end(trainer, pl_module)
         data = next(iter(self.dataloader))
         image, target = data
-        # image = image.cuda()
-        # target = target.cuda()
+        if self.use_gpu:
+            image = image.cuda()
+            target = target.cuda()
         with torch.no_grad():
             # Take average of multiple inference as there is a random noise
             # Single
