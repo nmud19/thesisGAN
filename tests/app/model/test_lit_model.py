@@ -31,7 +31,7 @@ def test_lightning_model():
     # checkpoint_callback = pl.callbacks.model_checkpoint.ModelCheckpoint()
     logger = pl.loggers.TensorBoardLogger("tb_logs", name="lightning_logs")
     trainer = pl.Trainer(
-        # fast_dev_run=True,
+        fast_dev_run=True,
         max_epochs=3,
         logger=logger,
         # callbacks=[
