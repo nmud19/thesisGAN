@@ -16,38 +16,34 @@ def test_lightning_model():
     )
     model = lit_model.Pix2PixLitModule(
         generator=generator,
-        discriminator=discriminator
+        discriminator=discriminator,
+        use_gpu=False
     )
-    train_dir_path = "/Users/nimud/PycharmProject/thesisGAN/sample_data"
-    train_images = [
-        f"{train_dir_path}/{x}" for x in os.listdir(train_dir_path)
-    ]
-    train_dataset, valid_dataset = consume_data.get_dataset(
-        train_images=train_images,
-        test_images=train_images,
+    # data Module
+    anime_sketch_data_module = consume_data.AnimeSketchDataModule(
+        data_dir="/Users/nimud/PycharmProject/thesisGAN/sample_data/",
+        train_folder_name="",
+        val_folder_name="",
+        num_images=0
     )
-    train_dataloader, valid_dataloader = consume_data.get_dataloaders(
-        train_dataset=train_dataset,
-        test_dataset=train_dataset,
-    )
-
     # Trainer
-    epoch_inference_callback = lit_model.EpochInference(valid_dataloader)
-    checkpoint_callback = pl.callbacks.model_checkpoint.ModelCheckpoint()
-    logger = pl.loggers.TensorBoardLogger("tb_logs", name="pix2pix_lightning_model")
+    # epoch_inference_callback = lit_model.EpochInference(valid_dataloader,use_gpu=False)
+    # checkpoint_callback = pl.callbacks.model_checkpoint.ModelCheckpoint()
+    logger = pl.loggers.TensorBoardLogger("tb_logs", name="lightning_logs")
     trainer = pl.Trainer(
         # fast_dev_run=True,
-        max_epochs=5,
+        max_epochs=3,
         logger=logger,
-        callbacks=[
-            epoch_inference_callback,
-            checkpoint_callback,
-            # pl.callbacks.TQDMProgressBar(refresh_rate=10)
-        ],
-        default_root_dir="/Users/nimud/PycharmProject/thesisGAN/checkpoints/",
+        # callbacks=[
+        #     # epoch_inference_callback,
+        #     # checkpoint_callback,
+        #     # pl.callbacks.TQDMProgressBar(refresh_rate=10)
+        # ],
+        default_root_dir="chk",
+        progress_bar_refresh_rate=1
     )
     trainer.fit(
-        model,
-        train_dataloader,
-        valid_dataloader
+        model=model,
+        datamodule=anime_sketch_data_module
     )
+    print("complete!")
