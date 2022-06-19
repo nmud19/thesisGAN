@@ -115,12 +115,14 @@ class AnimeSketchDataModule(pl.LightningDataModule):
         return torch.utils.data.DataLoader(
             self.train_dataset,
             batch_size=config.train_batch_size,
-            shuffle=False
+            shuffle=False,
+            num_workers=4
         )
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
             self.val_dataset,
             batch_size=config.val_batch_size,
-            shuffle=False
+            shuffle=False,
+            num_workers=4
         )
