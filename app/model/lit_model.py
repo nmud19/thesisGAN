@@ -81,7 +81,7 @@ class Pix2PixLitModule(pl.LightningModule):
             [sketch[0], colour[0], gen_coloured[0]],
             normalize=True
         )
-        self.logger.experiment.add_image('Image Grid', grid_image, self.current_epoch)
+        self.logger.experiment.add_image(f'Image Grid {str(self.current_epoch)}', grid_image, self.current_epoch)
 
     def validation_step(self, batch, batch_idx):
         """ Validation step """
