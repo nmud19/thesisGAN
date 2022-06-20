@@ -82,9 +82,13 @@ class AnimeSketchDataModule(pl.LightningDataModule):
             data_dir: str,
             num_images: int,
             train_folder_name: str = "train/",
-            val_folder_name: str = "val/"
+            val_folder_name: str = "val/",
+            train_batch_size: int = config.train_batch_size,
+            val_batch_size: int = config.val_batch_size,
     ):
         super().__init__()
+        self.val_dataset = None
+        self.train_dataset = None
         self.data_dir: str = data_dir
         # Set train and val images folder
         train_path: str = f"{self.data_dir}{train_folder_name}/"
@@ -94,6 +98,9 @@ class AnimeSketchDataModule(pl.LightningDataModule):
         #
         self.train_images = train_images[:num_images] if num_images else train_images
         self.val_images = val_images[:num_images] if num_images else val_images
+        #
+        self.train_batch_size = train_batch_size
+        self.val_batch_size = val_batch_size
 
     def set_datasets(self) -> None:
         """ Get the train and test datasets """
@@ -114,7 +121,7 @@ class AnimeSketchDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
             self.train_dataset,
-            batch_size=config.train_batch_size,
+            batch_size=self.train_batch_size,
             shuffle=False,
             num_workers=4
         )
@@ -122,7 +129,7 @@ class AnimeSketchDataModule(pl.LightningDataModule):
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
             self.val_dataset,
-            batch_size=config.val_batch_size,
+            batch_size=self.val_batch_size,
             shuffle=False,
             num_workers=4
         )
