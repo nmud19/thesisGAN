@@ -80,11 +80,12 @@ class AnimeSketchDataModule(pl.LightningDataModule):
     def __init__(
             self,
             data_dir: str,
-            num_images: int,
             train_folder_name: str = "train/",
             val_folder_name: str = "val/",
             train_batch_size: int = config.train_batch_size,
             val_batch_size: int = config.val_batch_size,
+            train_num_images: int = 0,
+            val_num_images: int = 0,
     ):
         super().__init__()
         self.val_dataset = None
@@ -96,8 +97,8 @@ class AnimeSketchDataModule(pl.LightningDataModule):
         val_path: str = f"{self.data_dir}{val_folder_name}"
         val_images: List[str] = [f"{val_path}{x}" for x in os.listdir(val_path)]
         #
-        self.train_images = train_images[:num_images] if num_images else train_images
-        self.val_images = val_images[:num_images] if num_images else val_images
+        self.train_images = train_images[:train_num_images] if train_num_images else train_images
+        self.val_images = val_images[:val_num_images] if val_num_images else val_images
         #
         self.train_batch_size = train_batch_size
         self.val_batch_size = val_batch_size
