@@ -92,8 +92,8 @@ class Pix2PixLitModule(pl.LightningModule):
         }
 
     def configure_optimizers(self, lr=.0002):
-        gen_opt = torch.optim.Adam(self.gen.parameters(), lr=lr)
-        disc_opt = torch.optim.Adam(self.disc.parameters(), lr=lr)
+        gen_opt = torch.optim.Adam(self.gen.parameters(), lr=2e-4, betas=(0.5, 0.999))
+        disc_opt = torch.optim.Adam(self.disc.parameters(), lr=6e-5, betas=(0.5, 0.999))
         return disc_opt, gen_opt
 
 
