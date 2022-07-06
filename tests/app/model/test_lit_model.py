@@ -9,11 +9,8 @@ import os
 # TODO fix this unit test to work in pipeline
 def test_lightning_model():
     """ Test model e2e """
-    generator = unetGen.UNET()
-    discriminator = patch_gan.PatchGan(
-        input_channels=6,
-        hidden_channels=1
-    )
+    generator = unetGen.Generator(in_channels=3)
+    discriminator = patch_gan.Discriminator(in_channels=3)
     model = lit_model.Pix2PixLitModule(
         generator=generator,
         discriminator=discriminator,
@@ -24,7 +21,6 @@ def test_lightning_model():
         data_dir="/Users/nimud/PycharmProject/thesisGAN/sample_data/",
         train_folder_name="",
         val_folder_name="",
-        num_images=0
     )
     # Trainer
     # epoch_inference_callback = lit_model.EpochInference(valid_dataloader,use_gpu=False)

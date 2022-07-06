@@ -66,14 +66,18 @@ class EncoderLayer(torch.nn.Module):
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=3,
+                stride=2,
+                padding=1,
             ),
-            torch.nn.ReLU(),
+            torch.nn.LeakyReLU(),
             torch.nn.Conv2d(
                 in_channels=out_channels,
                 out_channels=out_channels,
                 kernel_size=3,
+                stride=2,
+                padding=1,
             ),
-            torch.nn.ReLU(),
+            torch.nn.LeakyReLU(),
         )
         self.max_pool = torch.nn.Sequential(
             torch.nn.MaxPool2d(2),
