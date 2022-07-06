@@ -20,7 +20,7 @@ class Pix2PixLitModule(pl.LightningModule):
             generator,
             discriminator,
             use_gpu: bool,
-            lambda_recon=200
+            lambda_recon=100
     ):
         super().__init__()
         self.save_hyperparameters()
@@ -34,6 +34,7 @@ class Pix2PixLitModule(pl.LightningModule):
         #
         self.adversarial_criterion = nn.BCEWithLogitsLoss()
         self.recon_criterion = nn.L1Loss()
+        self.lambda_l1 = lambda_recon
 
     def _gen_step(self, real_images, conditioned_images):
         # Pix2Pix has adversarial and a reconstruction loss
@@ -41,21 +42,25 @@ class Pix2PixLitModule(pl.LightningModule):
         fake_images = self.gen(conditioned_images)
         disc_logits = self.disc(fake_images, conditioned_images)
         adversarial_loss = self.adversarial_criterion(disc_logits, torch.ones_like(disc_logits))
-
         # calculate reconstruction loss
-        recon_loss = self.recon_criterion(fake_images, real_images)
-        lambda_recon = self.hparams.lambda_recon
-
-        return adversarial_loss + lambda_recon * recon_loss
+        recon_loss = self.recon_criterion(fake_images, real_images) * self.lambda_l1
+        #
+        self.log("Gen recon_loss", recon_loss)
+        self.log("Gen adversarial_loss", adversarial_loss)
+        #
+        return adversarial_loss + recon_loss
 
     def _disc_step(self, real_images, conditioned_images):
         fake_images = self.gen(conditioned_images).detach()
+        #
         fake_logits = self.disc(fake_images, conditioned_images)
-
         real_logits = self.disc(real_images, conditioned_images)
-
+        #
         fake_loss = self.adversarial_criterion(fake_logits, torch.zeros_like(fake_logits))
         real_loss = self.adversarial_criterion(real_logits, torch.ones_like(real_logits))
+        #
+        self.log("PatchGAN fake_loss", fake_loss)
+        self.log("PatchGAN real_loss", real_loss)
         return (real_loss + fake_loss) / 2
 
     def forward(self, x):
@@ -91,9 +96,9 @@ class Pix2PixLitModule(pl.LightningModule):
             'colour': condition
         }
 
-    def configure_optimizers(self, lr=.0002):
-        gen_opt = torch.optim.Adam(self.gen.parameters(), lr=2e-4, betas=(0.5, 0.999))
-        disc_opt = torch.optim.Adam(self.disc.parameters(), lr=6e-5, betas=(0.5, 0.999))
+    def configure_optimizers(self, lr=2e-4):
+        gen_opt = torch.optim.Adam(self.gen.parameters(), lr=lr, betas=(0.5, 0.999))
+        disc_opt = torch.optim.Adam(self.disc.parameters(), lr=lr, betas=(0.5, 0.999))
         return disc_opt, gen_opt
 
 

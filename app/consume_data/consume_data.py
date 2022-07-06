@@ -38,16 +38,39 @@ class AnimeDataset(torch.utils.data.Dataset):
         colored_imgs = image[:, :image.shape[1] // 2, :]
 
         # data augmentation on both sketchs and colored_imgs
-        resized_sketch = self.transform.resize_572(image=sketchs)
-        resized_coloured_imgs = self.transform.resize_572(image=colored_imgs)
+        augmentations = self.transform.both_transform(image=sketchs, image0=colored_imgs)
+        sketchs, colored_imgs = augmentations['image'], augmentations['image0']
 
         # conduct data augmentation respectively
-        sketchs = self.transform.transform_only_input(image=resized_sketch['image'])['image']
-        colored_imgs = self.transform.transform_only_mask(image=resized_coloured_imgs['image'])['image']
+        sketchs = self.transform.transform_only_input(image=sketchs)['image']
+        colored_imgs = self.transform.transform_only_mask(image=colored_imgs)['image']
         return sketchs, colored_imgs
 
 
+# Data Augmentation
 class Transforms:
+    def __init__(self):
+        # use on both sketchs and colored images
+        self.both_transform = A.Compose([
+            A.Resize(width=256, height=256),
+            A.HorizontalFlip(p=.5)
+        ], additional_targets={'image0': 'image'})
+
+        # use on sketchs only
+        self.transform_only_input = A.Compose([
+            A.ColorJitter(p=.1),
+            A.Normalize(mean=[.5, .5, .5], std=[.5, .5, .5], max_pixel_value=255.0),
+            al_pytorch.ToTensorV2(),
+        ])
+
+        # use on colored images
+        self.transform_only_mask = A.Compose([
+            A.Normalize(mean=[.5, .5, .5], std=[.5, .5, .5], max_pixel_value=255.0),
+            al_pytorch.ToTensorV2(),
+        ])
+
+
+class Transforms_v1:
     """ Class to hold transforms """
 
     def __init__(self):
@@ -58,6 +81,10 @@ class Transforms:
 
         self.resize_388 = A.Compose([
             A.Resize(width=388, height=388)
+        ])
+
+        self.resize_256 = A.Compose([
+            A.Resize(width=256, height=256)
         ])
 
         # use on sketchs only
