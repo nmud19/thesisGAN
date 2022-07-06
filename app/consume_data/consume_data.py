@@ -151,7 +151,8 @@ class AnimeSketchDataModule(pl.LightningDataModule):
             self.train_dataset,
             batch_size=self.train_batch_size,
             shuffle=False,
-            num_workers=4
+            num_workers=2,
+            pin_memory=True
         )
 
     def val_dataloader(self):
@@ -159,5 +160,6 @@ class AnimeSketchDataModule(pl.LightningDataModule):
             self.val_dataset,
             batch_size=self.val_batch_size,
             shuffle=False,
-            num_workers=4
+            num_workers=2,
+            pin_memory=True
         )

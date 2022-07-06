@@ -27,7 +27,7 @@ def test_lightning_model():
     # checkpoint_callback = pl.callbacks.model_checkpoint.ModelCheckpoint()
     logger = pl.loggers.TensorBoardLogger("tb_logs", name="lightning_logs")
     trainer = pl.Trainer(
-        fast_dev_run=True,
+        #fast_dev_run=True,
         max_epochs=3,
         logger=logger,
         # callbacks=[
@@ -36,7 +36,7 @@ def test_lightning_model():
         #     # pl.callbacks.TQDMProgressBar(refresh_rate=10)
         # ],
         default_root_dir="chk",
-        progress_bar_refresh_rate=1
+        #progress_bar_refresh_rate=1
     )
     trainer.fit(
         model=model,
