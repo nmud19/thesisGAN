@@ -36,25 +36,25 @@ class Pix2PixLitModule(pl.LightningModule):
         self.recon_criterion = nn.L1Loss()
         self.lambda_l1 = lambda_recon
 
-    def _gen_step(self, real_images, conditioned_images):
+    def _gen_step(self, sketch, coloured_sketches):
         # Pix2Pix has adversarial and a reconstruction loss
         # First calculate the adversarial loss
-        fake_images = self.gen(conditioned_images)
-        disc_logits = self.disc(fake_images, conditioned_images)
+        gen_coloured_sketches = self.gen(sketch)
+        disc_logits = self.disc(gen_coloured_sketches, coloured_sketches)
         adversarial_loss = self.adversarial_criterion(disc_logits, torch.ones_like(disc_logits))
         # calculate reconstruction loss
-        recon_loss = self.recon_criterion(fake_images, real_images) * self.lambda_l1
+        recon_loss = self.recon_criterion(gen_coloured_sketches, sketch) * self.lambda_l1
         #
         self.log("Gen recon_loss", recon_loss)
         self.log("Gen adversarial_loss", adversarial_loss)
         #
         return adversarial_loss + recon_loss
 
-    def _disc_step(self, real_images, conditioned_images):
-        fake_images = self.gen(conditioned_images).detach()
+    def _disc_step(self, sketch, coloured_sketches):
+        gen_coloured_sketches = self.gen(sketch).detach()
         #
-        fake_logits = self.disc(fake_images, conditioned_images)
-        real_logits = self.disc(real_images, conditioned_images)
+        fake_logits = self.disc(gen_coloured_sketches, coloured_sketches)
+        real_logits = self.disc(sketch, coloured_sketches)
         #
         fake_loss = self.adversarial_criterion(fake_logits, torch.zeros_like(fake_logits))
         real_loss = self.adversarial_criterion(real_logits, torch.ones_like(real_logits))

@@ -29,11 +29,11 @@ class AnimeDataset(torch.utils.data.Dataset):
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor]:
         """ Get image and mask by index """
         # read image file
-        img_path = img_file = self.list_files[index]
-        image = np.array(Image.open(img_path))
+        img_file = self.list_files[index]
+        #img_path = os.path.join(self.root_dir, img_file)
+        image = np.array(Image.open(img_file))
 
         # divide image into sketchs and colored_imgs, right is sketch and left is colored images
-        # as according to the dataset
         sketchs = image[:, image.shape[1] // 2:, :]
         colored_imgs = image[:, :image.shape[1] // 2, :]
 
