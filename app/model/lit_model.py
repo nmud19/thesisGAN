@@ -40,10 +40,11 @@ class Pix2PixLitModule(pl.LightningModule):
         # Pix2Pix has adversarial and a reconstruction loss
         # First calculate the adversarial loss
         gen_coloured_sketches = self.gen(sketch)
-        disc_logits = self.disc(gen_coloured_sketches, coloured_sketches)
+        # disc_logits = self.disc(gen_coloured_sketches, coloured_sketches)
+        disc_logits = self.disc(sketch, gen_coloured_sketches)
         adversarial_loss = self.adversarial_criterion(disc_logits, torch.ones_like(disc_logits))
         # calculate reconstruction loss
-        recon_loss = self.recon_criterion(gen_coloured_sketches, sketch) * self.lambda_l1
+        recon_loss = self.recon_criterion(gen_coloured_sketches, coloured_sketches) * self.lambda_l1
         #
         self.log("Gen recon_loss", recon_loss)
         self.log("Gen adversarial_loss", adversarial_loss)
@@ -53,7 +54,8 @@ class Pix2PixLitModule(pl.LightningModule):
     def _disc_step(self, sketch, coloured_sketches):
         gen_coloured_sketches = self.gen(sketch).detach()
         #
-        fake_logits = self.disc(gen_coloured_sketches, coloured_sketches)
+        # fake_logits = self.disc(gen_coloured_sketches, coloured_sketches)
+        fake_logits = self.disc(sketch, gen_coloured_sketches)
         real_logits = self.disc(sketch, coloured_sketches)
         #
         fake_loss = self.adversarial_criterion(fake_logits, torch.zeros_like(fake_logits))
@@ -100,7 +102,6 @@ class Pix2PixLitModule(pl.LightningModule):
         gen_opt = torch.optim.Adam(self.gen.parameters(), lr=lr, betas=(0.5, 0.999))
         disc_opt = torch.optim.Adam(self.disc.parameters(), lr=lr, betas=(0.5, 0.999))
         return disc_opt, gen_opt
-
 
 # class EpochInference(pl.Callback):
 #     """
