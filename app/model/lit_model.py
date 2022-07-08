@@ -90,7 +90,7 @@ class Pix2PixLitModule(pl.LightningModule):
             normalize=True
         )
         self.logger.experiment.add_image(f'Image Grid {str(self.current_epoch)}', grid_image, self.current_epoch)
-        plt.imshow(grid_image.permute(1, 2, 0))
+        #plt.imshow(grid_image.permute(1, 2, 0))
 
     def validation_step(self, batch, batch_idx):
         """ Validation step """
