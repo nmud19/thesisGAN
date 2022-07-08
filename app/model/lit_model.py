@@ -86,11 +86,11 @@ class Pix2PixLitModule(pl.LightningModule):
         colour = outputs[0]['colour']
         gen_coloured = self.gen(sketch)
         grid_image = torchvision.utils.make_grid(
-            [sketch[0], colour[0], gen_coloured[0], sketch[1], colour[1], gen_coloured[1]],
+            [sketch[0], colour[0], gen_coloured[0]],
             normalize=True
         )
-        plt.imshow(grid_image.permute(1, 2, 0))
         self.logger.experiment.add_image(f'Image Grid {str(self.current_epoch)}', grid_image, self.current_epoch)
+        plt.imshow(grid_image.permute(1, 2, 0))
 
     def validation_step(self, batch, batch_idx):
         """ Validation step """
