@@ -163,3 +163,13 @@ class AnimeSketchDataModule(pl.LightningDataModule):
             num_workers=2,
             pin_memory=True
         )
+
+    def predict_dataloader(self):
+        """ For now return the validation step"""
+        return torch.utils.data.DataLoader(
+            self.val_dataset,
+            batch_size=self.val_batch_size,
+            shuffle=False,
+            num_workers=2,
+            pin_memory=True
+        )
