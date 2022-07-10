@@ -67,7 +67,8 @@ class Pix2PixLitModule(pl.LightningModule):
         return (real_loss + fake_loss) / 2
 
     def forward(self, x):
-        return self.gen(x)
+        with torch.no_grad():
+            return self.gen(x)
 
     def training_step(self, batch, batch_idx, optimizer_idx):
         real, condition = batch
@@ -90,7 +91,7 @@ class Pix2PixLitModule(pl.LightningModule):
             normalize=True
         )
         self.logger.experiment.add_image(f'Image Grid {str(self.current_epoch)}', grid_image, self.current_epoch)
-        #plt.imshow(grid_image.permute(1, 2, 0))
+        # plt.imshow(grid_image.permute(1, 2, 0))
 
     def validation_step(self, batch, batch_idx):
         """ Validation step """
