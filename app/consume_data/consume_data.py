@@ -1,5 +1,6 @@
 import torch
 import os
+
 from typing import List, Optional
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -9,6 +10,7 @@ import numpy as np
 import albumentations.pytorch as al_pytorch
 from typing import Dict, Tuple
 from app import config
+
 import pytorch_lightning as pl
 
 torch.__version__
@@ -74,6 +76,7 @@ class Transforms:
         ])
 
 
+
 class AnimeSketchDataModule(pl.LightningDataModule):
     """ Class to hold the Anime sketch Data"""
 
@@ -134,3 +137,4 @@ class AnimeSketchDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=4
         )
+

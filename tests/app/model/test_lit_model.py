@@ -16,6 +16,7 @@ def test_lightning_model():
     )
     model = lit_model.Pix2PixLitModule(
         generator=generator,
+
         discriminator=discriminator,
         use_gpu=False
     )
@@ -47,3 +48,4 @@ def test_lightning_model():
         datamodule=anime_sketch_data_module
     )
     print("complete!")
+

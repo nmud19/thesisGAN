@@ -4,6 +4,7 @@ import torch.nn as nn
 import torchvision
 
 
+
 class Pix2PixLitModule(pl.LightningModule):
     """ Lightning Module for pix2pix """
 
@@ -135,3 +136,4 @@ class Pix2PixLitModule(pl.LightningModule):
 #         # image = torch.squeeze(image)
 #         grid_image = torchvision.utils.make_grid([image[0], target[0], reconstruction_init[0]])
 #         torchvision.utils.save_image(grid_image, fp=f'{trainer.default_root_dir}/epoch-{trainer.current_epoch:04}.png')
+
