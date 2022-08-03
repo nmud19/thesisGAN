@@ -19,6 +19,7 @@ def test_lightning_model():
     # )
     model = lit_model.Pix2PixLitModule(
         generator=generator,
+
         discriminator=discriminator,
         use_gpu=False
     )
