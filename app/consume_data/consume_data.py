@@ -1,6 +1,7 @@
 import torch
 import os
-from typing import List
+
+from typing import List, Optional
 from PIL import Image
 import matplotlib.pyplot as plt
 from torchvision import transforms
@@ -9,6 +10,8 @@ import numpy as np
 import albumentations.pytorch as al_pytorch
 from typing import Dict, Tuple
 from app import config
+
+import pytorch_lightning as pl
 
 torch.__version__
 
@@ -73,32 +76,65 @@ class Transforms:
         ])
 
 
-def get_dataset(train_images: str, test_images: str) -> Tuple[AnimeDataset, AnimeDataset]:
-    """ Get the train and test datasets """
-    train_dataset = AnimeDataset(
-        imgs_path=train_images,
-        transforms=Transforms()
-    )
-    test_dataset = AnimeDataset(
-        imgs_path=test_images,
-        transforms=Transforms()
-    )
-    print("The train test dataset lengths are : ", len(train_dataset), len(test_dataset))
-    return train_dataset, test_dataset
 
+class AnimeSketchDataModule(pl.LightningDataModule):
+    """ Class to hold the Anime sketch Data"""
 
-def get_dataloaders(train_dataset: AnimeDataset, test_dataset: AnimeDataset) -> Tuple[
-    torch.utils.data.DataLoader, torch.utils.data.DataLoader,
-]:
-    """ Get DataLoaders pytorch """
-    train_dataloader = torch.utils.data.DataLoader(
-        train_dataset,
-        batch_size=config.train_batch_size,
-        shuffle=False
-    )
-    test_dataloader = torch.utils.data.DataLoader(
-        test_dataset,
-        batch_size=config.test_batch_size,
-        shuffle=False
-    )
-    return train_dataloader, test_dataloader
+    def __init__(
+            self,
+            data_dir: str,
+            train_folder_name: str = "train/",
+            val_folder_name: str = "val/",
+            train_batch_size: int = config.train_batch_size,
+            val_batch_size: int = config.val_batch_size,
+            train_num_images: int = 0,
+            val_num_images: int = 0,
+    ):
+        super().__init__()
+        self.val_dataset = None
+        self.train_dataset = None
+        self.data_dir: str = data_dir
+        # Set train and val images folder
+        train_path: str = f"{self.data_dir}{train_folder_name}/"
+        train_images: List[str] = [f"{train_path}{x}" for x in os.listdir(train_path)]
+        val_path: str = f"{self.data_dir}{val_folder_name}"
+        val_images: List[str] = [f"{val_path}{x}" for x in os.listdir(val_path)]
+        #
+        self.train_images = train_images[:train_num_images] if train_num_images else train_images
+        self.val_images = val_images[:val_num_images] if val_num_images else val_images
+        #
+        self.train_batch_size = train_batch_size
+        self.val_batch_size = val_batch_size
+
+    def set_datasets(self) -> None:
+        """ Get the train and test datasets """
+        self.train_dataset = AnimeDataset(
+            imgs_path=self.train_images,
+            transforms=Transforms()
+        )
+        self.val_dataset = AnimeDataset(
+            imgs_path=self.val_images,
+            transforms=Transforms()
+        )
+        print("The train test dataset lengths are : ", len(self.train_dataset), len(self.val_dataset))
+        return None
+
+    def setup(self, stage: Optional[str] = None) -> None:
+        self.set_datasets()
+
+    def train_dataloader(self):
+        return torch.utils.data.DataLoader(
+            self.train_dataset,
+            batch_size=self.train_batch_size,
+            shuffle=False,
+            num_workers=4
+        )
+
+    def val_dataloader(self):
+        return torch.utils.data.DataLoader(
+            self.val_dataset,
+            batch_size=self.val_batch_size,
+            shuffle=False,
+            num_workers=4
+        )
+
