@@ -8,7 +8,7 @@ import torch
     [
         (
                 torch.randn(1, 3, 572, 572),
-                torch.Size([1, 3, 572, 572])
+                torch.Size([1, 3, 388, 388])
         ),
     ]
 )

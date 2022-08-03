@@ -95,6 +95,4 @@ class UNET(torch.nn.Module):
         fin_layer = self.final_layer(
             dec4,
         )
-        # Interpolate to retain size
-        fin_layer_resized = torch.nn.functional.interpolate(fin_layer, 572)
-        return fin_layer_resized
+        return fin_layer
