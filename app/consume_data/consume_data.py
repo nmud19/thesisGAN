@@ -44,7 +44,7 @@ class AnimeDataset(torch.utils.data.Dataset):
         # conduct data augmentation respectively
         sketchs = self.transform.transform_only_input(image=sketchs)['image']
         colored_imgs = self.transform.transform_only_mask(image=colored_imgs)['image']
-        return sketchs, colored_imgs
+        return colored_imgs, sketchs
 
 
 # Data Augmentation
